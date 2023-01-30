@@ -116,6 +116,7 @@ button.play:hover {
 .footer .footerLogo {
     height: 80%;
     user-select: none;
+    color: white;
 }
 
 .footer .save-box {
