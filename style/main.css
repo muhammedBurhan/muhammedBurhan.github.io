@@ -118,6 +118,9 @@ button.play:hover {
     user-select: none;
     color: white;
 }
+.footer .footerLogo img {
+    color: white;
+}
 
 .footer .save-box {
     display: flex;
