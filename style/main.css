@@ -116,9 +116,8 @@ button.play:hover {
 .footer .footerLogo {
     height: 80%;
     user-select: none;
-    color: white;
 }
-.footer .footerLogo img {
+.footer .footerLogo img::before {
     color: white;
 }
 
