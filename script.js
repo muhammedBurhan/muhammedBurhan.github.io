@@ -1,268 +1,340 @@
-let main = document.querySelector('.main');
-let wholeMat = document.querySelector('.whole-mat');
-let currentMat = document.querySelector('.current-mat');
-let mainWholeMaterials=[], wholeMaterials=[], currentMaterials=[], wholeFoods=[], currentFoods=[], currentFoodsHtmls=[];
-let wholeMaterialsHtml='', currentMaterialsHtml='';
-let receiveBox = document.querySelector('.receive-box');
-let getButton = document.querySelector('.get');
-let receiveClose = document.querySelector('.receive-box .top');
-let randomButton = document.querySelector('.random');
-let infoBlack = document.querySelector('.info-black');
+let plusButton = document.querySelector('.add-timer');
+let addButton = document.querySelector('.play-cf');
+let currentName = document.querySelector('.current-name');
+let currentHour = document.querySelector('.hour');
+let currentMinute = document.querySelector('.minute');
+let currentSecond = document.querySelector('.second');
+let content = document.querySelector('.content');
+let colorSelector = document.querySelector('.timer-colors');
+let resetButton = document.querySelector('.reset');
+let pauseCf = document.querySelector('.pause-cf');
+let saveIt = document.querySelector('.save-it')
+let getSave = document.querySelector('.get-save')
+let config = document.getElementById('config');
+let timerNumber = 1;
+let timers = [];
+let timers2 = [];
+let defColor = document.querySelector('.color-1');
+let defColorTo = document.querySelector('#c-1');
+defColorTo.checked = true;
+let currentColor = defColor.getAttribute('data-color');
+let isPausedStart = false;
+let isSaved = false;
 
-let XHR = new XMLHttpRequest();
-XHR.open('GET', 'informations/foods/materials.json', false);
-XHR.onload = function() {
-    if (this.status == 200) {
-        let materials = JSON.parse(this.responseText);
-        materials.fix.forEach(x=>{wholeMaterials.push(`${x}`);})
-        materials.first.forEach(x=>{wholeMaterials.push(`${x}`);})
-        materials.second.forEach(x=>{wholeMaterials.push(`${x}`);})
-        materials.third.forEach(x=>{wholeMaterials.push(`${x}`);})
+currentName.style.border = "1px solid #999";
+
+addButton.addEventListener('click', addTimer);
+content.addEventListener('click', contentClick);
+resetButton.addEventListener('click', resetBoxes);
+saveIt.addEventListener('click', saveStatus);
+getSave.addEventListener('click', getSaved);
+pauseCf.addEventListener('click', () => {
+    if (isPausedStart==false) {
+        pauseCf.style.backgroundColor = "rgba(255, 255, 0, 0.7)";
+        pauseCf.style.boxShadow = "0 0 10px orange";
+        isPausedStart = true;
     }
-}
-XHR.send();
-
-mainWholeMaterials = wholeMaterials;
-wholeMaterials.forEach(element=>{wholeMaterialsHtml += `<div title="${element}" class="mat">${element}<a href="#" class="icon-up"></a></div>\n`});
-currentMaterials.forEach(element=>{currentMaterialsHtml += `<div title="${element}" class="mat">${element}<a href="#" class="icon-up"></a></div>\n`});
-wholeMat.innerHTML = wholeMaterialsHtml;
-currentMat.innerHTML = currentMaterialsHtml;
-
-document.querySelectorAll(".icon-up").forEach(element=>{element.textContent="+"});
-document.querySelectorAll(".icon-down").forEach(element=>{element.textContent="×"});
-
-setInterval(updateDatabase, 3000);
-
-updateDatabase();
-main.addEventListener('click', mainClick);
-getButton.addEventListener('click', getClick);
-randomButton.addEventListener('click', randomButtonClick)
-
-
-
-function mainClick(e) {
+    else {
+        pauseCf.style += "background-color: #ddd";
+        pauseCf.style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+        isPausedStart = false;
+    }
+})
+colorSelector.addEventListener('click', (e) => {
     let target = e.target;
-    if (target.className == "icon-down") {
-        delete currentMaterials[currentMaterials.indexOf(target.parentNode.getAttribute('title'))];
-        wholeMaterials.push(target.parentNode.getAttribute('title'));
-        updateLists();
+    if (target.getAttribute('data-class') == 'color')
+    {
+        currentColor = target.getAttribute('data-color');
     }
-    else if (target.className == "icon-up") {
-        delete wholeMaterials[wholeMaterials.indexOf(target.parentNode.getAttribute('title'))];
-        currentMaterials.push(target.parentNode.getAttribute('title'));
-        updateLists();
-    }
-    let wholeMatColor = wholeMat.innerHTML.indexOf('class="mat"') == -1 ? "rgba(255, 255, 255, 0.3)":"rgba(255, 255, 255, 0.7)";
-    wholeMat.style.backgroundColor = wholeMatColor;
+})
+plusButton.addEventListener('click', () => {
+    pauseCf.style += "background-color: #ddd";
+    pauseCf.style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+    isPausedStart = false;
+    defColorTo.checked = true;
+})
+
+if(window.innerWidth < 400) {
+    content.style.justifyContent = "center";
 }
 
-function updateLists() {
-    wholeMaterialsHtml = '';
-    currentMaterialsHtml = '';
-    wholeMaterials.forEach(element=>{wholeMaterialsHtml += `<div title="${element}" class="mat">${element}<a href="#" class="icon-up"></a></div>\n`});
-    wholeMat.innerHTML = wholeMaterialsHtml;
-    currentMaterials.forEach(element=>{currentMaterialsHtml += `<div title="${element}" class="mat">${element}<a href="#" class="icon-down"></a></div>\n`});
-    currentMat.innerHTML = currentMaterialsHtml;
-    document.querySelectorAll(".icon-up").forEach(element=>{element.textContent="+"});
-    document.querySelectorAll(".icon-down").forEach(element=>{element.textContent="×"});
-}
+setInterval(loop, 1000);
 
-function updateDatabase() {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', 'informations/foods/foods.json', false);
-    xhr.onload = function() {
-        if (this.status == 200) {
-            wholeFoods = [];
-            JSON.parse(this.responseText).foods.forEach(food=>{wholeFoods.push(food)})
-        }
+function addTimer() {
+    if (currentName.value == '' || currentName.value.indexOf(',')!=-1) {
+        currentName.style.border = "1px solid red";
+        return "";
     }
-    xhr.send();
-}
-
-function receiveClick(e) {
-    let target = e.target;
-    if (target.getAttribute('data-tab') == "" && target.getAttribute('data-select') != "") {
-        document.querySelectorAll('[data-tab]').forEach(element=>{element.removeAttribute('data-select')})
-        target.setAttribute('data-select', '');
-        document.querySelector('.receive-box .content').innerHTML = currentFoodsHtmls[target.getAttribute('data-tabNum')];
-    }
-}
-
-function getClick() {
-    wholeFoods.forEach(element=>{if (isIn(element.fixMat, currentMaterials)) {currentFoods.push(element);}})
-    let tabNumber = currentFoods.length;
-    if (tabNumber == 0) {
-        alert('size uygun yemek bulunamadı!');
-        return false;
-    }
-    let tabsHtml = '';
-    for(let i = 0; i < tabNumber; i++) {
-        if (i == 0) {
-            tabsHtml += `<div data-tabNum = "0" data-tab = "" data-select="" class="tab-1">food1</div>`;
-            continue
-        }
-        tabsHtml += `<div data-tabNum = "${i}" data-tab = "" class="tab-${i+1}">food${i+1}</div>`;
-    }
-    let sayac = 0;
-    currentFoods.forEach(element=>{
-        sayac += 1;
-        let contentHtml = ``
-        contentHtml += `
-        <div style="background-image: url(${element.photo});background-position: bottom;background-size: contain;" class="header">
-            ${sayac==1?"Sana En Uygun Yemek: ":""}${element.name.charAt(0).toUpperCase() + element.name.slice(1).toLowerCase()}
-        </div>
-        <p class="on-yazi">
-            ${element.receive.top}
-        </p>
-        <h4 class="materials-h4">🠗Malzemeler🠗</h4>
-        `;
-        let receiveMaterialsHtml = '';
-        element.receive.materials.forEach(x=>{receiveMaterialsHtml += isOn(':', x)?`<li style="font-weight: bold;color: red">${x}</li>`:`<li>${x}</li>`})
-        contentHtml += `
-        <ul class="material-list">
-            ${receiveMaterialsHtml}
-        </ul>
-        `;
-        let stepsHtml = '';
-        element.receive.steps.forEach(y=>{stepsHtml += `<p>${y}</p>`})
-        let notesHtml = '';
-        element.notes.forEach(z=>{notesHtml+=`<p>${z}</p>`})
-        contentHtml += `
-        <div class="steps">
-            <h3>🠗Yapılışı🠗</h3>
-            ${stepsHtml}
-        </div>
-        <div class="notes">
-            <h3>Notes</h3>
-            ${notesHtml}
-        </div>
-        `;
-        currentFoodsHtmls.push(contentHtml);
-    })
     
-    let blackHtml = `
-    <div class="receive-box">
-        <div class="top">
-            <div class="tabs">
-                ${tabsHtml}
+    let alreadyNames = document.querySelectorAll('.timer-box .name');
+    let alreadyNameList = []
+    alreadyNames.forEach(y => {alreadyNameList.push(y.getAttribute('title'))})
+    if (alreadyNameList.indexOf(currentName.value)!=-1) {
+        currentName.style.border = "1px solid red";
+        return "";
+    }
+    currentHour.value = currentHour.value == '' ? 0:parseInt(currentHour.value)
+    currentMinute.value = currentMinute.value == '' ? 0:parseInt(currentMinute.value)
+    currentSecond.value = currentSecond.value == '' ? 0:parseInt(currentSecond.value)
+    currentName.style.border = "1px solid #999";
+    let html = `
+        <div data-number="${timerNumber}" class="timer-box">
+            <div title="${currentName.value}" class="name">
+                ${currentName.value.length<27?currentName.value:currentName.value.substring(0,27)+"..."}
             </div>
-            <div class="close"><a href="#" class="material-symbols-outlined">
-                cancel
-            </a></div>
+            <div data-number="${timerNumber}" class="time">
+                <span class="hour">${double(currentHour.value)}</span>.<span class="minute">${double(currentMinute.value)}</span>.<span class="second">${double(currentSecond.value)}</span>
+            </div>
+            <div class="buttons">
+                <button title="Bitir" data-number="${timerNumber}" class="stop">🗑️</button>
+                <button title="Durdur" data-number="${timerNumber}" class="pause">⏸️</button>
+                <button title="Devam" data-number="${timerNumber}" class="play">▶</button>
+            </div>
         </div>
-        <div class="content">
-            ${currentFoodsHtmls[0]}
-        </div>
-    </div>
-    `;
-    
-    document.querySelector('.black').innerHTML = blackHtml;
-    receiveBox = document.querySelector('.receive-box');
-    receiveClose = document.querySelector('.receive-box .top');
-    document.querySelector('.black').style.visibility = 'visible';
-    receiveBox.addEventListener('click', receiveClick);
-    receiveClose.addEventListener('click', receiveCloseClick);
-
+`
+    let hour = parseInt(currentHour.value);
+    let minute = parseInt(currentMinute.value);
+    let second = parseInt(currentSecond.value);
+    let totalSeconds = hour*60*60 + minute*60 + second;
+    let targetDate = new Date();
+    targetDate.setHours(new Date().getHours()+hour);
+    targetDate.setMinutes(new Date().getMinutes()+minute);
+    targetDate.setSeconds(new Date().getSeconds()+second);
+    timers.push({
+        name : currentName.value,
+        targetDate : targetDate,
+        isPaused : isPausedStart,
+        number : timerNumber,
+        isFinish : false,
+        totalSeconds : totalSeconds
+    })
+    timers2.push({
+        name : currentName.value,
+        hour : hour,
+        minute : minute,
+        second : second,
+        color : currentColor,
+        isBroke : false,
+        totalSeconds : totalSeconds
+    })
+    content.innerHTML += html;
+    content.querySelector(`.timer-box[data-number="${timerNumber}"]`).style.backgroundColor = currentColor;
+    if (isPausedStart) {
+        content.querySelector(`.pause[data-number="${timerNumber}"]`).style.backgroundColor = "rgba(255, 255, 0, 0.3)";
+        content.querySelector(`.pause[data-number="${timerNumber}"]`).style.boxShadow = "0 0 10px orange";
+    }
+    else if (!isPausedStart) {
+        content.querySelector(`.play[data-number="${timerNumber}"]`).style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+        content.querySelector(`.play[data-number="${timerNumber}"]`).style.boxShadow = "0 0 10px lime";
+    }
+    config.checked = false;
+    timerNumber += 1;
+    isSaved = false;
+    saveIt.removeAttribute('data-checked');
+    resetBoxes();
 }
 
-function isIn(arr1, arr2) {
-    let esik = arr1.length;
-    arr1.forEach(x=>{
-        arr2.forEach(y=>{
-            esik -= y==x?1:0;
-        })
-    })
-    if (esik == 0) {
-        return true
+function double(data) {
+    if (data < 10) {
+        return `0${data}`
     }
     else 
     {
-        return false
+        return data
     }
 }
 
-function receiveCloseClick(e) {
+function contentClick(e) {
     let target = e.target;
-    if (target.className == 'material-symbols-outlined') {
-        document.querySelector('.black').style.visibility = 'hidden';
-        currentFoodsHtmls = [];
-        currentFoods = [];
+    if (target.className == 'play') {
+        let timerNum = target.getAttribute('data-number');
+        timers.forEach(element=>{if(element.number==timerNum){
+            element.isPaused = false;
+            target.style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+            target.style.boxShadow = "0 0 10px lime";
+            target.parentNode.querySelector('.pause').style += "background-color: #ddd";
+            target.parentNode.querySelector('.pause').style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+        }})
+    }
+    else if (target.className == 'pause') {
+        let timerNum = target.getAttribute('data-number');
+        timers.forEach(element=>{if(element.number==timerNum){
+            element.isPaused = true;
+            target.parentNode.querySelector('.play').style += "background-color: #ddd";
+            target.parentNode.querySelector('.play').style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+            target.style.backgroundColor = "rgba(255, 255, 0, 0.3)";
+            target.style.boxShadow = "0 0 10px orange";
+        }})
+    }
+    else if (target.className == 'stop') {
+        isSaved = false;
+        saveIt.removeAttribute('data-checked');
+        let timerNum = target.getAttribute('data-number');
+        content.removeChild(content.querySelector(`.timer-box[data-number='${timerNum}']`));
+        timers.forEach(element=>{
+            if(element.number == timerNum)
+            {
+                element.isFinish = true;
+                timers2.forEach(x=>{
+                    if (element.name == x.name) {
+                        x.isBroke = true;
+                    }
+                })
+            }
+        })
     }
 }
 
-function randomButtonClick() {
-    let randNum = Math.round(Math.random() * wholeFoods.length-1);
-    randNum = randNum<0?0:randNum>wholeFoods.length?wholeFoods.length-1:randNum;
-    currentFoods = [wholeFoods[randNum]];
-    currentFoods.forEach(element=>{
-        let contentHtml = ``
-        contentHtml += `
-        <div style="background-image: url(${element.photo});background-position: bottom;background-size: contain;" class="header">
-            Sana En Uygun Yemek: ${element.name.charAt(0).toUpperCase() + element.name.slice(1).toLowerCase()}
-        </div>
-        <p class="on-yazi">
-            ${element.receive.top}
-        </p>
-        <h4 class="materials-h4">🠗Malzemeler🠗</h4>
-        `;
-        let receiveMaterialsHtml = '';
-        element.receive.materials.forEach(x=>{receiveMaterialsHtml += isOn(':', x)?`<li style="font-weight: bold;color: red">${x}</li>`:`<li>${x}</li>`})
-        contentHtml += `
-        <ul class="material-list">
-            ${receiveMaterialsHtml}
-        </ul>
-        `;
-        let stepsHtml = '';
-        element.receive.steps.forEach(y=>{stepsHtml += `<p>${y}</p>`})
-        let notesHtml = '';
-        element.notes.forEach(z=>{notesHtml+=`<p>${z}</p>`})
-        contentHtml += `
-        <div class="steps">
-            <h3>🠗Yapılışı🠗</h3>
-            ${stepsHtml}
-        </div>
-        <div class="notes">
-            <h3>Notes</h3>
-            ${notesHtml}
-        </div>
-        `;
-        currentFoodsHtmls.push(contentHtml);
-    })
-    
-    let blackHtml = `
-    <div class="receive-box">
-        <div class="top">
-            <div class="tabs">
-                <div data-tabNum = "0" data-tab = "" data-select="" class="tab-1">food1</div>
-            </div>
-            <div class="close"><a href="#" class="material-symbols-outlined">
-                cancel
-            </a></div>
-        </div>
-        <div class="content">
-            ${currentFoodsHtmls[0]}
-        </div>
-    </div>
-    `;
-    
-    document.querySelector('.black').innerHTML = blackHtml;
-    receiveBox = document.querySelector('.receive-box');
-    receiveClose = document.querySelector('.receive-box .top');
-    document.querySelector('.black').style.visibility = 'visible';
-    receiveBox.addEventListener('click', receiveClick);
-    receiveClose.addEventListener('click', receiveCloseClick);
-
-}
-
-function isOn(str1, str2) {
-    for(let i = 0; i < str2.length; i++) {
-        if (str2.charAt(i) == str1) {
-            return true
+function loop() {
+    timers.forEach(element=>{
+        if (element.isPaused==true && !element.isFinish) {
+            element.targetDate.setSeconds(element.targetDate.getSeconds()+1);
         }
-    }
-    return false
+        else if (element.isPaused==false && !element.isFinish) {
+            //let sure = (element.targetDate.getTime() - new Date().getTime())/1000;
+            element.totalSeconds = element.totalSeconds - 1;
+            let sure = element.totalSeconds;
+            if (sure>=0) {
+                let hours = Math.floor(sure/(60*60));
+                let minutes = Math.floor(sure/60)%60;
+                let seconds = Math.floor(sure%60);
+                let targetTimer = document.querySelector(`.timer-box[data-number="${element.number}"]`);
+                targetTimer.querySelector('.hour').innerHTML = double(hours);
+                targetTimer.querySelector('.minute').innerHTML = double(minutes);
+                targetTimer.querySelector('.second').innerHTML = double(seconds);
+            }
+            else {
+                let finishedTimer = content.querySelector(`.timer-box[data-number='${element.number}']`);
+                finishedTimer.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+                finishedTimer.style.color = 'white';
+                element.isFinish = true;
+            }
+        }
+    })
 }
 
-function getInfo() {
-    infoBlack.style.visibility = 'visible';
+function resetBoxes() {
+    currentName.value = '';
+    currentHour.value = 0;
+    currentMinute.value = 0;
+    currentSecond.value = 0;
+    defColorTo.checked = true;
+    currentColor = defColor.getAttribute('data-color');
+    pauseCf.style += "background-color: #ddd";
+    pauseCf.style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+    isPausedStart = false;
 }
+
+function resetAll() {
+    currentName.value = '';
+    currentHour.value = 0;
+    currentMinute.value = 0;
+    currentSecond.value = 0;
+    defColorTo.checked = true;
+    currentColor = defColor.getAttribute('data-color');
+    pauseCf.style += "background-color: #ddd";
+    pauseCf.style += "box-shadow: 0 0 10px rgba(0, 0, 0, 0.7)";
+    isPausedStart = false;
+    timers = [];
+    timers2 = [];
+    isSaved = false;
+    saveIt.removeAttribute('data-checked');
+    content.textContent = "";
+    timerNumber = 1;
+}
+function saveStatus() {
+    let sayac = 1;
+    if(!isSaved && confirm('Bu görünüm programınız olarak kaydedilecek.')) {
+        let num = localStorage.length
+        for(i = 1; i < num+1; i++) {
+            localStorage.removeItem(`timer${i}`)
+        }
+        timers2.forEach(element => {
+            try {
+                if (!element.isBroke) {
+                    let cTimer = [
+                        element.name,
+                        element.color,
+                        element.hour,
+                        element.minute,
+                        element.second
+                    ]
+                    localStorage.setItem(`timer${sayac}`, cTimer);
+                    sayac++;
+                }
+            }
+            catch(e) {
+            }
+        })
+        isSaved = true;
+        saveIt.setAttribute('data-checked', '');
+    }
+}
+function getSaved() {
+    if(confirm('Programınız getirilecek (Devam edilirse ekrandaki düzen sıfırlanır).')) {
+        resetAll()
+        let sNum = localStorage.length
+        for (let k = 1; k < sNum+1; k++) {
+            let currentTimerInfo = localStorage.getItem(`timer${k}`);
+            let currentTimer = currentTimerInfo.split(',');
+            currentTimer[2] = currentTimer[2] == '' ? 0:parseInt(currentTimer[2]);
+            currentTimer[3] = currentTimer[3] == '' ? 0:parseInt(currentTimer[3]);
+            currentTimer[4] = currentTimer[4] == '' ? 0:parseInt(currentTimer[4]);
+            let html = `
+                <div data-number="${timerNumber}" class="timer-box">
+                    <div title="${currentTimer[0]}" class="name">
+                        ${currentTimer[0].length<27?currentTimer[0]:currentTimer[0].substring(0,27)+"..."}
+                    </div>
+                    <div data-number="${timerNumber}" class="time">
+                        <span class="hour">${double(currentTimer[2])}</span>.<span class="minute">${double(currentTimer[3])}</span>.<span class="second">${double(currentTimer[4])}</span>
+                    </div>
+                    <div class="buttons">
+                        <button title="Bitir" data-number="${timerNumber}" class="stop">🗑️</button>
+                        <button title="Durdur" data-number="${timerNumber}" class="pause">⏸️</button>
+                        <button title="Devam" data-number="${timerNumber}" class="play">▶</button>
+                    </div>
+                </div>
+        `
+            let hour = parseInt(currentTimer[2]);
+            let minute = parseInt(currentTimer[3]);
+            let second = parseInt(currentTimer[4]);
+            let totalSeconds = hour*60*60 + minute*60 + second;
+            let targetDate = new Date();
+            targetDate.setHours(new Date().getHours()+hour);
+            targetDate.setMinutes(new Date().getMinutes()+minute);
+            targetDate.setSeconds(new Date().getSeconds()+second);
+            isPausedStart = true
+            timers.push({
+                name : currentTimer[0],
+                targetDate : targetDate,
+                isPaused : isPausedStart,
+                number : timerNumber,
+                isFinish : false,
+                totalSeconds : totalSeconds
+            })
+            timers2.push({
+                name : currentTimer[0],
+                hour : hour,
+                minute : minute,
+                second : second,
+                color : currentTimer[1],
+                isBroke : false
+            })
+            content.innerHTML += html;
+            content.querySelector(`.timer-box[data-number="${timerNumber}"]`).style.backgroundColor = currentTimer[1];
+            if (isPausedStart) {
+                content.querySelector(`.pause[data-number="${timerNumber}"]`).style.backgroundColor = "rgba(255, 255, 0, 0.3)";
+                content.querySelector(`.pause[data-number="${timerNumber}"]`).style.boxShadow = "0 0 10px orange";
+            }
+            else if (!isPausedStart) {
+                content.querySelector(`.play[data-number="${timerNumber}"]`).style.backgroundColor = "rgba(0, 255, 0, 0.3)";
+                content.querySelector(`.play[data-number="${timerNumber}"]`).style.boxShadow = "0 0 10px lime";
+            }
+            timerNumber += 1;
+            resetBoxes();
+        }
+        isPausedStart = false;
+        isSaved = true;
+    }
+}
+
