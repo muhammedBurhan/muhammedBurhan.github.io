@@ -1,131 +1,151 @@
-@import url(receive.css);
+@import url(configBox.css);
 * {
     box-sizing: border-box;
-    margin: 0;
     padding: 0;
-    border: none;
-    text-decoration: none;
-    list-style: none;
+    margin: 0;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 html, body {
+    width: 100%;
     height: 100%;
 }
-body {
-    background-image: url("https://images.pexels.com/photos/1565982/pexels-photo-1565982.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2");
-    background-position: center;
-    background-size: cover;
-}
 .main {
+    height: 100%;
+    position: relative;
+    min-height: 335px;
+}
+.content {
+    height: 80%;
+    display: flex;
+    column-gap: 15px;
+    padding: 25px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    overflow: auto;
+    row-gap: 15px;
+    background-color: #333;
+}
+.content .timer-box {
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+    transition: background-color 300ms;
+    overflow: hidden;
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+}
+.timer-box .name {
+    padding: 5px 0;
+    font-size: 17px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    overflow: scroll;
+}
+.timer-box .time {
+    font-size: 30px;
+    padding: 10px 0 0;
+    font-family: 'Courier New', Courier, monospace;
+}
+.timer-box .buttons {
+    padding: 25px 75px 15px;
+    display: flex;
+    column-gap: 15px;
+}
+.timer-box .buttons button {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+    transition: background-color 100ms, transform 100ms;
+    background-color: #ddd;
+    border: none;
+}
+button.stop:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 0 10px red;
+}
+button.pause:hover {
+    background-color: rgba(255, 255, 0, 0.3);
+    box-shadow: 0 0 10px orange;
+}
+.timer-box .buttons button:active {
+    transform: scale(0.95);
+}
+button.play:hover {
+    background-color: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 10px lime;
+}
+.footer {
+    height: 20%;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: black;
+    justify-content: space-between;
+    /*box-shadow: 0 0 15px black*/
+    font-size: 14px;
+}
+.footer .add-timer {
+    padding: 20px 45px;
+    border-radius: 5px;
+    transition: background-color 100ms, transform 100ms;
+    background-color: #999;
+    color: white;
+    max-width: 47%;
+    max-height: 80%;
+    text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    column-gap: 25px;
-    width: 100%;
-    height: 100%;
 }
-.materials {
-    border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
-    width: 500px;
-    height: 500px;
+.footer .add-timer:hover {
+    background-color: #333;
+    box-shadow: 0 0 5px white;
+}
+.footer .add-timer:active {
+    transform: scale(0.95);
+}
+#config {
+    display: none;
+}
+#config:checked + .timer-config {
+    visibility: visible;
+    opacity: 1;
+}
+
+.footer .footerLogo {
+    height: 80%;
+    user-select: none;
+    color: white;
+}
+
+.footer .save-box {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 15px 15px;
-    background-color: rgba(255, 255, 255, 0.2);
+    height: 90%;
+    max-width: 47%;
 }
-.mat {
-    display: flex;
-    padding: 5px 50px 5px 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    border-radius: 7px;
-    margin: 5px 10px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    background-color: rgba(255, 255, 255, 0.7);
-}
-.mat > a {
-    position: absolute;
-    right: 0;
-    padding-right: 10px;
-    padding-left: 10px;
-    border-left: 1px solid #aaa;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    transition: background-color 300ms;
-}
-.mat > a.icon-down:hover {
-    background-color: rgba(255, 0, 0, 0.7);
-    color: white;
-}
-.mat > a.icon-up:hover {
-    background-color: rgba(0, 255, 0, 0.7);
-    color: white;
-}
-.current-mat {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    overflow: auto;
-    row-gap: 5px;
+.save-box > div {
     width: 100%;
-    height: 30%;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    transform: background-color 3000ms;
-    background-color: rgba(255, 255, 255, 0.7);
-}
-.current-mat:empty {
-    background-color: rgba(255, 255, 255, 0.3);
-    transform: background-color 3000ms;
-}
-.whole-mat {
-    padding: 30px 0;
-    align-items: center;
-    position: relative;
-    overflow: auto;
-    display: flex;
-    flex-wrap: wrap;
-    row-gap: 20px;
-    width: 100%;
-    height: 65%;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    transform: background-color 300ms;
-    background-color: rgba(255, 255, 255, 0.7);
-}
-.buttons {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100px;
-    height: 150px;
-    overflow: hidden;
-    border-radius: 15px;
-}
-.buttons > button {
-    height: 50%;
-}
-.logo {
-    display: flex;
+    height: 45%;
+    background-color: rgb(113, 0, 234);
+    border-radius: 5px;
     color: white;
-    position: absolute;
-    top: 25px;
-    left: 25px;
-    font-size: 30px;
-    text-shadow: 5px 5px 5px rgba(0, 0, 0, 0.7), -5px 5px 5px rgba(0, 0, 0, 0.7), 5px -5px 5px rgba(0, 0, 0, 0.7), -5px -5px 5px rgba(0, 0, 0, 0.7);
+    user-select: none;
+    transition: transform 100ms;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
-.logo-name {
-    font-size: 50px;
-    letter-spacing: 7px;
-    font-family: serif;
+.save-box > div:hover {
+    transform: scale(1.025);
 }
-.logo-name sub {
-    font-size: 15px;
-    letter-spacing: 1px;
+.save-box > div:active {
+    transform: scale(0.975);
+}
+.save-it[data-checked] {
+    background-color: green;
 }
