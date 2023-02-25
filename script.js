@@ -338,3 +338,24 @@ function getSaved() {
     }
 }
 
+if (window.innerWidth < 400) {
+    document.querySelector('.save-box').style.fontSize = '10px'
+    document.querySelector('.get-save').style.width = '50px'
+    document.querySelector('.get-save').style.height = '50px'
+    document.querySelector('.get-save').textContent = 'Program'
+    document.querySelector('.get-save').style.fontWeight = 'bold'
+    document.querySelector('.save-it').style.height = '50px'
+    document.querySelector('.save-it').style.width = '50px'
+    document.querySelector('.save-it').textContent = 'Kaydet'
+    document.querySelector('.save-it').style.fontWeight = 'bold'
+
+    document.querySelector('.add-timer').style.width = '75px'
+    document.querySelector('.add-timer').style.height = '75px'
+    document.querySelector('.add-timer').style.fontWeight = 'bold'
+    document.querySelector('.add-timer').textContent = 'Ekle'
+
+    /*document.querySelector('.footerLogo').width = '50px'
+    document.querySelector('.footerLogo').height = '50px'
+    document.querySelector('.footerLogo img').width = '35px'
+    document.querySelector('.footerLogo img').height = '35px'*/
+}
