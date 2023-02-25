@@ -1,71 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <title>TimerX</title>
     <link rel="stylesheet" href="style/main.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-    <title>Chooser</title>
+    <meta name = "viewport" content = "width=device-width, initial-scale=1">
 </head>
 <body>
     <div class="main">
-        <div class="logo"><div class="logo-name">Chooser<sub>food</sub></div>™</div>
-        <div class="strech"></div>
-        <div class="materials">
-            <div class="current-mat">
-            </div>
-            <div class="whole-mat">
-            </div>
+        <div class="content">
         </div>
-        <div class="buttons">
-            <button class="get">Get</button>
-            <button class="random">Random</button>
-        </div>
-        <div class="black">
-            <div class="receive-box">
-                <div class="top">
-                    <div class="tabs">
-                        ${tabsHtml}
-                    </div>
-                    <div class="close"><a href="#" class="material-symbols-outlined">
-                        cancel
-                    </a></div>
+        <div class="footer">
+            <div class="save-box">
+                <div class="get-save">
+                    Programımı Getir
                 </div>
-                <div class="content">
-                    <div style="background-image: url(${element.photo});background-position: bottom;background-size: contain;" class="header">
-                        Sana En Uygun Yemek: Lorem ipsum
-                    </div>
-                    <p class="on-yazi">
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
-                    </p>
-                    <h4 class="materials-h4">🠗Malzemeler🠗</h4>
-                    <ul class="material-list">
-                        <li>lorem ipsum</li>
-                        <li>ipsum lorem</li>
-                        <li>lipsum orem</li>
-                        <li>orem lipsum</li>
-                        <li>opsem lirum</li>
-                    </ul>
-                    <div class="steps">
-                        <h3>🠗Yapılışı🠗</h3>
-                        <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
-                        <p>There are many variations of passages of Lorem Ipsum available.</p>
-                        <p>Contrary to popular belief, Lorem Ipsum is not simply random text.</p>
-                        <p>The standard chunk of Lorem Ipsum used since the 1500s is reproduced below for those interested.</p>
-                    </div>
-                    <div class="notes">
-                        <h3>Notes</h3>
-                        <p>*Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                        <p>*Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                        <p>*"Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."</p>
-                        <p>*But I must explain to you how all this mistaken idea of denouncing pleasure.</p>
-                    </div>
+                <div class="save-it">
+                    Görünümü Kaydet
                 </div>
             </div>
+            <div class="footerLogo" style="font-size: 50px;">
+                <img src="logo.png" alt="X">
+            </div>
+            <label class="add-timer" for="config">➕ Zamanlayıcı Ekle</label>
         </div>
-        <div class="info-black">
-            <div class="info-box">
-                <div class="top"></div>
-                <div class="content"></div>
+        <input id="config" type="checkbox">
+        <div class="timer-config">
+            <input name="color" id="c-1" type="radio">
+            <input name="color" id="c-2" type="radio">
+            <input name="color" id="c-3" type="radio">
+            <input name="color" id="c-4" type="radio">
+            <input name="color" id="c-5" type="radio">
+            <div class="timer-box-cf">
+                <div class="name-cf">
+                    <input placeholder="Timer Name" value="" class="current-name" type="text">
+                </div>
+                <div class="time-cf">
+                    <input title="saat" max="18" min="0" value="0" class="hour" type="number">
+                    <input title="dakika" max="59" min="0" value="0" class="minute" type="number">
+                    <input title="saniye" max="59" min="0" value="0" class="second" type="number">
+                </div>
+                <div class="buttons-cf">
+                    <button title="Reset" class="stop-cf reset">🗑️</button>
+                    <button title="Hemen Başlamasın" class="pause-cf">⏸️</button>
+                    <button title="Başla!" class="play-cf add-button">▶</button>
+                </div>
+                <div class="timer-colors">
+                    <label data-class="color" data-color="#DAF7A6" for="c-1" class="color-1"></label>
+                    <label data-class="color" data-color="#FAB723" for="c-2" class="color-2"></label>
+                    <label data-class="color" data-color="#FF5733" for="c-3" class="color-3"></label>
+                    <label data-class="color" data-color="#B50027" for="c-4" class="color-4"></label>
+                    <label data-class="color" data-color="#900C3F" for="c-5" class="color-5"></label>
+                </div>
+                <label for="config" class="config-close"></label>
             </div>
         </div>
     </div>
